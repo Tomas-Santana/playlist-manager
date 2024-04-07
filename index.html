@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Splaytify</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="src/script.js" defer type="module"></script>
+  <script src="src/index.js" type="module"></script>
+  <script src="src/audioPlayer.js" defer type="module"></script>
+  <script type="module" src="src/create.js"></script>
+</head>
+
+<body>
+
+  <div id="app" class="flex gap-1">
+    <div id="songs" class="w-1/3 border p-3 rounded-md shadow-lg h-dvh flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-xl">
+          Library
+        </h2>
+        <button id="add-song"
+          class="rounded-full border w-8 h-8 bg-green-500 text-white hover:bg-green-300 transition-colors">+</button>
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <input id="search-library" type="text" placeholder="Search" class="inline p-2 border rounded-md flex-1" />
+      </div>
+      <!-- search -->
+
+      <div id="song-list" class="p-2 gap-1 w-full flex-1 border overflow-y-scroll"></div>
+      <dialog id="add-song-dialog"></dialog>
+
+    </div>
+    <div id="playlists" class="w-1/3 border p-3 rounded-md shadow-lg h-dvh flex flex-col gap-4">
+      <div class="flex gap-4 items-center justify-between">
+        <h2 class="font-bold text-xl">
+          Playlists
+        </h2>
+        <button id="add-playlist"
+          class="rounded-full border w-8 h-8 bg-green-500 text-white hover:bg-green-300 transition-colors">+</button>
+      </div>
+      <div id="playlists-list" class="p-2 gap-1 w-full flex-1 border overflow-y-scroll"></div>
+      <dialog id="create-playlist-dialog"></dialog>
+
+    </div>
+    <div id="current-playlist" class="w-1/3 border p-3 rounded-md shadow-lg h-dvh flex flex-col gap-4">
+      <h2 class="font-bold text-xl" id="current-playlist-title">
+        Current Playlist
+      </h2>
+      <div id="playlist-songs" class="p-2 gap-1 w-full flex-1 border overflow-y-scroll" data-id="0">
+      </div>
+    </div>
+  </div>
+  <div id="player"
+    class="fixed bottom-0 left-0 right-0 z-20 h-40 border-t bg-white p-3 flex flex-col items-center justify-center transition-all translate-y-14 hover:-translate-y-0 translate-y-52 "
+    data-song="0">
+    <audio id="current-song" src="">
+    </audio>
+    <p class="text-xs text-gray-500" id="playing-from">Playlist</p>
+    <p class="font-bold text-lg" id="song-title">Select song</p>
+    <p class="text-gray-500" id="song-artist">Select song</p>
+    <div class="flex gap-2 w-full max-w-3xl items-center justify-center">
+      <p id="current-time" class="text-xs text-gray-500">0:00</p>
+      <input id="progress" type="range" class="w-full h-2 accent-green-500 border-none bg-green-100 my-3 cursor-pointer"
+        value="0" step="1" min="0" max="100" />
+      <p id="duration" class="text-xs text-gray-500">0:00</p>
+    </div>
+    <div id="buttons" class="flex items-center justify-center gap-4">
+      <!-- shuffle -->
+      <button id="shuffle"
+        class="w-12 h-12 hover:bg-gray-200 hidden text-green-500 rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6 transition-colors" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+          height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13.484 9.166 15 7h5m0 0-3-3m3 3-3 3M4 17h4l1.577-2.253M4 7h4l7 10h5m0 0-3 3m3-3-3-3" />
+        </svg>
+      </button>
+      <button id="shuffle-off"
+        class="w-12 h-12 hover:bg-gray-200  text-gray-500 rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6 transition-colors" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+          height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13.484 9.166 15 7h5m0 0-3-3m3 3-3 3M4 17h4l1.577-2.253M4 7h4l7 10h5m0 0-3 3m3-3-3-3" />
+        </svg>
+      </button>
+
+      <button id="previous" class="w-12 h-12 bg-gray-200  text-gray-500 rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+          fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd"
+            d="M7 6a1 1 0 0 1 2 0v4l6.4-4.8A1 1 0 0 1 17 6v12a1 1 0 0 1-1.6.8L9 14v4a1 1 0 1 1-2 0V6Z"
+            clip-rule="evenodd" />
+        </svg>
+
+      </button>
+      <button id="pause" class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+          fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd"
+            d="M8 5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H8Zm7 0a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1Z"
+            clip-rule="evenodd" />
+        </svg>
+
+      </button>
+      <button id="play" class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center hidden">
+        <svg class="w-6 h-6 text-white overflow-y-scroll" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+          width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" d="M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z"
+            clip-rule="evenodd" />
+        </svg>
+
+      </button>
+      <!-- next -->
+      <button id="next" class="w-12 h-12 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+          width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd"
+            d="M17 6a1 1 0 1 0-2 0v4L8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8L15 14v4a1 1 0 1 0 2 0V6Z"
+            clip-rule="evenodd" />
+        </svg>
+
+      </button>
+      <!-- volume -->
+      <div id="volume" class="w-12 h-12 text-gray-500 rounded-full flex items-center justify-center relative">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+          width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            d="M13 6.037c0-1.724-1.978-2.665-3.28-1.562L5.638 7.933H4c-1.105 0-2 .91-2 2.034v4.066c0 1.123.895 2.034 2 2.034h1.638l4.082 3.458c1.302 1.104 3.28.162 3.28-1.562V6.037Z" />
+          <path fill-rule="evenodd"
+            d="M14.786 7.658a.988.988 0 0 1 1.414-.014A6.135 6.135 0 0 1 18 12c0 1.662-.655 3.17-1.715 4.27a.989.989 0 0 1-1.414.014 1.029 1.029 0 0 1-.014-1.437A4.085 4.085 0 0 0 16 12a4.085 4.085 0 0 0-1.2-2.904 1.029 1.029 0 0 1-.014-1.438Z"
+            clip-rule="evenodd" />
+          <path fill-rule="evenodd"
+            d="M17.657 4.811a.988.988 0 0 1 1.414 0A10.224 10.224 0 0 1 22 12c0 2.807-1.12 5.35-2.929 7.189a.988.988 0 0 1-1.414 0 1.029 1.029 0 0 1 0-1.438A8.173 8.173 0 0 0 20 12a8.173 8.173 0 0 0-2.343-5.751 1.029 1.029 0 0 1 0-1.438Z"
+            clip-rule="evenodd" />
+        </svg>
+        <div id="volume-container" class="absolute -top-[90px] border bg-white rounded-md p-2 -rotate-90 hidden">
+          <input id="volume-slider" type="range"
+            class="h-2 accent-green-500 border-none bg-green-100 my-3 cursor-pointer" value="100" step="1" min="0"
+            max="100" />
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      var allSongs = document.getElementById("song-list");
+      var allPlaylists = document.getElementById("playlists-list");
+      var playlistSongs = document.getElementById("playlist-songs");
+
+      var currentPlaylist = {
+        showing: 0,
+        playing: 0,
+        songs: []
+      };
+      var shuffle = false;
+
+      var player = {
+        full: document.getElementById("player"),
+        nextButton: document.getElementById("next"),
+        prevButton: document.getElementById("previous"),
+        playButton: document.getElementById("play"),
+        pauseButton: document.getElementById("pause"),
+        audioElement: document.getElementById("current-song"),
+        songTitle: document.getElementById("song-title"),
+        songArtist: document.getElementById("song-artist"),
+        playlist: document.getElementById("playing-from"),
+        slider: document.getElementById("progress"),
+        shuffleButtonOn: document.getElementById("shuffle"),
+        shuffleButtonOff: document.getElementById("shuffle-off"),
+        currentTime: document.getElementById("current-time"),
+        duration: document.getElementById("duration"),
+        volume: {
+          full: document.getElementById("volume"),
+          slider: document.getElementById("volume-slider"),
+          container: document.getElementById("volume-container"),
+        },
+      };
+    </script>
+
+  </div>
+
+
+
+
+  <style>
+
+
+  </style>
+</body>
+
+</html>
